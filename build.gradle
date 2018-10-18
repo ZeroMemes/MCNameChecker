@@ -25,7 +25,11 @@ dependencies {
     implementation 'org.oxbow:swing-bits:1.0.0-SNAPSHOT'
 }
 
-// Disable the standard jar task
-jar.enabled = false
+jar {
+    manifest {
+        attributes 'Main-Class': 'me.zero.mcnamecheck.Main'
+    }
+}
+
 // Make shadowJar run on build
 build.dependsOn(shadowJar)
