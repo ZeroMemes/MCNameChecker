@@ -1,0 +1,31 @@
+plugins {
+    id 'java'
+    id 'com.github.johnrengelman.shadow' version '4.0.1'
+}
+
+group 'me.zero'
+version '1.0.0'
+
+sourceCompatibility = targetCompatibility = '1.8'
+compileJava {
+    sourceCompatibility = targetCompatibility = '1.8'
+}
+
+repositories {
+    mavenCentral()
+    maven {
+        url 'https://raw.githubusercontent.com/eugener/oxbow/master/maven/repository/'
+    }
+}
+
+dependencies {
+    implementation 'com.google.code.gson:gson:2.8.5'
+    implementation 'com.google.guava:guava:26.0-jre'
+    implementation 'com.intellij:forms_rt:7.0.3'
+    implementation 'org.oxbow:swing-bits:1.0.0-SNAPSHOT'
+}
+
+// Disable the standard jar task
+jar.enabled = false
+// Make shadowJar run on build
+build.dependsOn(shadowJar)
