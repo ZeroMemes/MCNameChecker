@@ -96,7 +96,7 @@
               <text value="Contains"/>
             </properties>
           </component>
-          <component id="5911d" class="javax.swing.JRadioButton" binding="radioButtonNegate">
+          <component id="aeb9b" class="javax.swing.JCheckBox" binding="checkBoxNegate">
             <constraints>
               <grid row="1" column="3" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
             </constraints>

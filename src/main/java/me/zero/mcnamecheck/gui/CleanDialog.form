@@ -73,7 +73,7 @@
                 <properties/>
                 <border type="none" title="Check Status"/>
                 <children>
-                  <component id="8eb07" class="javax.swing.JRadioButton" binding="radioButtonAvailable">
+                  <component id="dbf7d" class="javax.swing.JCheckBox" binding="checkBoxAvailable">
                     <constraints>
                       <grid row="0" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
                     </constraints>
@@ -81,7 +81,7 @@
                       <text value="Available"/>
                     </properties>
                   </component>
-                  <component id="c84a2" class="javax.swing.JRadioButton" binding="radioButtonUnavailable">
+                  <component id="2e86" class="javax.swing.JCheckBox" binding="checkBoxUnavailable">
                     <constraints>
                       <grid row="0" column="1" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
                     </constraints>
@@ -89,7 +89,7 @@
                       <text value="Unavailable"/>
                     </properties>
                   </component>
-                  <component id="ebf48" class="javax.swing.JRadioButton" binding="radioButtonFailed">
+                  <component id="576ca" class="javax.swing.JCheckBox" binding="checkBoxFailed">
                     <constraints>
                       <grid row="1" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
                     </constraints>
@@ -97,7 +97,7 @@
                       <text value="Failed"/>
                     </properties>
                   </component>
-                  <component id="bb2e" class="javax.swing.JRadioButton" binding="radioButtonUnchecked">
+                  <component id="4d803" class="javax.swing.JCheckBox" binding="checkBoxUnchecked">
                     <constraints>
                       <grid row="1" column="1" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
                     </constraints>

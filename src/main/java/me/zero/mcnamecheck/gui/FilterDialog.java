@@ -21,7 +21,7 @@ public final class FilterDialog extends JDialog {
     private JTextField textFieldRegex;
     private JRadioButton radioButtonMatches;
     private JRadioButton radioButtonContains;
-    private JRadioButton radioButtonNegate;
+    private JCheckBox checkBoxNegate;
 
     FilterDialog(Consumer<Predicate<String>> callback) {
         setContentPane(this.contentPane);
@@ -54,7 +54,7 @@ public final class FilterDialog extends JDialog {
 
     private boolean isValid(Pattern pattern, String element) {
         Matcher matcher = pattern.matcher(element);
-        return !this.radioButtonNegate.isSelected() == (this.radioButtonMatches.isSelected() ? matcher.matches() : matcher.find());
+        return !this.checkBoxNegate.isSelected() == (this.radioButtonMatches.isSelected() ? matcher.matches() : matcher.find());
     }
 
     {
@@ -106,9 +106,9 @@ public final class FilterDialog extends JDialog {
         radioButtonContains = new JRadioButton();
         radioButtonContains.setText("Contains");
         panel3.add(radioButtonContains, new GridConstraints(1, 2, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
-        radioButtonNegate = new JRadioButton();
-        radioButtonNegate.setText("Negate");
-        panel3.add(radioButtonNegate, new GridConstraints(1, 3, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
+        checkBoxNegate = new JCheckBox();
+        checkBoxNegate.setText("Negate");
+        panel3.add(checkBoxNegate, new GridConstraints(1, 3, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
         final JLabel label2 = new JLabel();
         label2.setText("Conditions");
         panel3.add(label2, new GridConstraints(1, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));

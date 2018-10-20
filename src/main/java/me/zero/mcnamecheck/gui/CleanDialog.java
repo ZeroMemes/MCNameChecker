@@ -20,10 +20,10 @@ public final class CleanDialog extends JDialog {
     private JButton buttonOK;
     private JButton buttonCancel;
 
-    private JRadioButton radioButtonAvailable;
-    private JRadioButton radioButtonUnavailable;
-    private JRadioButton radioButtonFailed;
-    private JRadioButton radioButtonUnchecked;
+    private JCheckBox checkBoxAvailable;
+    private JCheckBox checkBoxUnavailable;
+    private JCheckBox checkBoxFailed;
+    private JCheckBox checkBoxUnchecked;
 
     CleanDialog(Consumer<Predicate<UsernameData>> callback) {
         setContentPane(this.contentPane);
@@ -32,16 +32,16 @@ public final class CleanDialog extends JDialog {
 
         this.buttonOK.addActionListener(event -> {
             callback.accept(u -> {
-                if (this.radioButtonAvailable.isSelected() && u.checkStatus == AVAILABLE) {
+                if (this.checkBoxAvailable.isSelected() && u.checkStatus == AVAILABLE) {
                     return false;
                 }
-                if (this.radioButtonUnavailable.isSelected() && u.checkStatus == UNAVAILABLE) {
+                if (this.checkBoxUnavailable.isSelected() && u.checkStatus == UNAVAILABLE) {
                     return false;
                 }
-                if (this.radioButtonFailed.isSelected() && u.checkStatus == FAILED) {
+                if (this.checkBoxFailed.isSelected() && u.checkStatus == FAILED) {
                     return false;
                 }
-                if (this.radioButtonUnchecked.isSelected() && u.checkStatus == UNCHECKED) {
+                if (this.checkBoxUnchecked.isSelected() && u.checkStatus == UNCHECKED) {
                     return false;
                 }
                 return true;
@@ -96,18 +96,18 @@ public final class CleanDialog extends JDialog {
         panel5.setLayout(new GridLayoutManager(2, 2, new Insets(0, 0, 0, 0), -1, -1));
         panel4.add(panel5, new GridConstraints(0, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, null, null, null, 0, false));
         panel5.setBorder(BorderFactory.createTitledBorder("Check Status"));
-        radioButtonAvailable = new JRadioButton();
-        radioButtonAvailable.setText("Available");
-        panel5.add(radioButtonAvailable, new GridConstraints(0, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
-        radioButtonUnavailable = new JRadioButton();
-        radioButtonUnavailable.setText("Unavailable");
-        panel5.add(radioButtonUnavailable, new GridConstraints(0, 1, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
-        radioButtonFailed = new JRadioButton();
-        radioButtonFailed.setText("Failed");
-        panel5.add(radioButtonFailed, new GridConstraints(1, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
-        radioButtonUnchecked = new JRadioButton();
-        radioButtonUnchecked.setText("Unchecked");
-        panel5.add(radioButtonUnchecked, new GridConstraints(1, 1, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
+        checkBoxAvailable = new JCheckBox();
+        checkBoxAvailable.setText("Available");
+        panel5.add(checkBoxAvailable, new GridConstraints(0, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
+        checkBoxUnavailable = new JCheckBox();
+        checkBoxUnavailable.setText("Unavailable");
+        panel5.add(checkBoxUnavailable, new GridConstraints(0, 1, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
+        checkBoxFailed = new JCheckBox();
+        checkBoxFailed.setText("Failed");
+        panel5.add(checkBoxFailed, new GridConstraints(1, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
+        checkBoxUnchecked = new JCheckBox();
+        checkBoxUnchecked.setText("Unchecked");
+        panel5.add(checkBoxUnchecked, new GridConstraints(1, 1, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
         final JLabel label1 = new JLabel();
         label1.setText("Select conditions that usernames should be removed under");
         panel3.add(label1, new GridConstraints(0, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
