@@ -26,6 +26,7 @@ public final class FilterDialog extends JDialog {
     FilterDialog(Consumer<Predicate<String>> callback) {
         setContentPane(this.contentPane);
         setModal(true);
+        setTitle("RegEx Filter");
         getRootPane().setDefaultButton(this.buttonOK);
 
         this.radioButtonMatches.setSelected(true);

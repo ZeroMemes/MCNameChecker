@@ -4,7 +4,7 @@ plugins {
 }
 
 group 'me.zero'
-version '1.0.0'
+version '1.0.1'
 
 sourceCompatibility = targetCompatibility = '1.8'
 compileJava {

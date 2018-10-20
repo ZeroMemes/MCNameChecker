@@ -3,6 +3,7 @@ package me.zero.mcnamecheck.gui;
 import com.google.common.collect.Lists;
 import com.intellij.uiDesigner.core.GridConstraints;
 import com.intellij.uiDesigner.core.GridLayoutManager;
+import com.mojang.api.profiles.Profile;
 import me.zero.mcnamecheck.Main;
 import me.zero.mcnamecheck.UsernameContainer;
 import me.zero.mcnamecheck.UsernameData;
@@ -13,11 +14,10 @@ import org.oxbow.swingbits.dialog.task.TaskDialogs;
 import javax.swing.*;
 import java.awt.*;
 import java.nio.file.Files;
-import java.nio.file.Paths;
 import java.text.NumberFormat;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Locale;
-import java.util.stream.Collectors;
 
 import static javax.swing.JOptionPane.*;
 import static me.zero.mcnamecheck.UsernameData.CheckStatus.*;
@@ -42,6 +42,7 @@ public final class GuiMain {
     private JLabel labelTotal;
     private JLabel labelChecked;
     private JLabel labelAvailable;
+    private JLabel labelUnmigrated;
     private JLabel labelFailed;
     private JLabel labelStatus;
 
@@ -92,29 +93,8 @@ public final class GuiMain {
             }
         });
 
-        this.buttonExport.addActionListener(event -> {
-            JFileChooser fileChooser = new JFileChooser();
-            fileChooser.setMultiSelectionEnabled(false);
-            int action = fileChooser.showSaveDialog(this.contentPane);
-            if (action == JFileChooser.APPROVE_OPTION) {
-                try {
-                    Files.write(
-                            Paths.get(fileChooser.getSelectedFile().getAbsolutePath() + ".txt"),
-                            this.container.getUsernameData().stream()
-                                    .filter(u -> u.checkStatus == AVAILABLE)
-                                    .map(u -> u.username)
-                                    .collect(Collectors.toList())
-                    );
-                } catch (Exception e) {
-                    TaskDialogs.showException(e);
-                }
-            }
-
-            this.container.getUsernameData().stream()
-                    .filter(u -> u.checkStatus == AVAILABLE)
-                    .map(u -> u.username)
-                    .forEach(System.out::println);
-        });
+        this.buttonExport.addActionListener(event ->
+                UIHelper.openWindow(new ExportDialog(this.container)));
 
         this.buttonFilter.addActionListener(event ->
                 UIHelper.openWindow(new FilterDialog(test -> {
@@ -164,11 +144,21 @@ public final class GuiMain {
                         Main.INSTANCE.profileRepository.findProfilesByNames(
                                 partition.stream().map(u -> u.username).toArray(String[]::new),
                                 (names, profiles) -> {
+                                    List<Profile> profileList = Arrays.asList(profiles);
+
                                     // Set everything to unavailable
-                                    partition.forEach(u -> u.checkStatus = UNAVAILABLE);
-                                    // Then go back and set anything that is available to available
-                                    Util.getAbsentNames(names, profiles).forEach(name ->
-                                            this.container.getByName(name).checkStatus = AVAILABLE);
+                                    partition.forEach(u -> {
+                                        u.checkStatus = UNAVAILABLE;
+
+                                        Profile profile = profileList.stream().filter(p -> u.username.equalsIgnoreCase(p.getName())).findFirst().orElse(null);
+
+                                        if (profile != null) {
+                                            u.checkStatus = UNAVAILABLE;
+                                            u.unmigrated = profile.isLegacy();
+                                        } else {
+                                            u.checkStatus = AVAILABLE;
+                                        }
+                                    });
                                     this.requestSuccess++;
                                 },
                                 e -> {
@@ -223,7 +213,7 @@ public final class GuiMain {
                                 setForeground(Color.GREEN);
                                 break;
                             case UNAVAILABLE:
-                                setForeground(Color.ORANGE);
+                                setForeground(user.unmigrated ? Color.BLUE : Color.ORANGE);
                                 break;
                             case FAILED:
                                 setForeground(Color.RED);
@@ -254,24 +244,21 @@ public final class GuiMain {
 
         int checked = (int) usernames.stream().filter(u -> u.checkStatus == AVAILABLE || u.checkStatus == UNAVAILABLE).count();
         int available = (int) usernames.stream().filter(u -> u.checkStatus == AVAILABLE).count();
+        int unmigrated = (int) usernames.stream().filter(u -> u.checkStatus == UNAVAILABLE && u.unmigrated).count();
         int failed = (int) usernames.stream().filter(u -> u.checkStatus == FAILED).count();
 
         NumberFormat format = NumberFormat.getNumberInstance(Locale.getDefault());
 
-
         this.buttonCheck.setText(this.running ? "Cancel" : "Check");
-        this.labelStatus.setText(this.status.name().substring(0, 1) + this.status.name().substring(1).toLowerCase());
+        this.labelStatus.setText(Util.capitalize(this.status.name()));
 
         this.labelTotal.setText(format.format(usernames.size()));
         this.labelChecked.setText(format.format(checked));
         this.labelAvailable.setText(format.format(available));
+        this.labelUnmigrated.setText(format.format(unmigrated));
         this.labelFailed.setText(format.format(failed));
         this.labelSuccess.setText(format.format(this.requestSuccess));
         this.labelFailure.setText(format.format(this.requestFailure));
-    }
-
-    private enum RunStatus {
-        IDLE, SENDING, WAITING
     }
 
     {
@@ -332,7 +319,7 @@ public final class GuiMain {
         buttonExport.setToolTipText("Export the available names to a file");
         panel1.add(buttonExport, new GridConstraints(1, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
         final JPanel panel3 = new JPanel();
-        panel3.setLayout(new GridLayoutManager(5, 2, new Insets(0, 0, 0, 0), -1, -1));
+        panel3.setLayout(new GridLayoutManager(6, 2, new Insets(0, 0, 0, 0), -1, -1));
         panel1.add(panel3, new GridConstraints(6, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, null, null, null, 0, false));
         panel3.setBorder(BorderFactory.createTitledBorder("Status"));
         final JLabel label3 = new JLabel();
@@ -355,16 +342,22 @@ public final class GuiMain {
         panel3.add(labelChecked, new GridConstraints(1, 1, 1, 1, GridConstraints.ANCHOR_EAST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
         final JLabel label6 = new JLabel();
         label6.setText("Failed");
-        panel3.add(label6, new GridConstraints(3, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
+        panel3.add(label6, new GridConstraints(4, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
         labelFailed = new JLabel();
         labelFailed.setText("0");
-        panel3.add(labelFailed, new GridConstraints(3, 1, 1, 1, GridConstraints.ANCHOR_EAST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
+        panel3.add(labelFailed, new GridConstraints(4, 1, 1, 1, GridConstraints.ANCHOR_EAST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
         labelStatus = new JLabel();
         labelStatus.setText("");
-        panel3.add(labelStatus, new GridConstraints(4, 1, 1, 1, GridConstraints.ANCHOR_EAST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
+        panel3.add(labelStatus, new GridConstraints(5, 1, 1, 1, GridConstraints.ANCHOR_EAST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
         final JLabel label7 = new JLabel();
         label7.setText("Status");
-        panel3.add(label7, new GridConstraints(4, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
+        panel3.add(label7, new GridConstraints(5, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
+        final JLabel label8 = new JLabel();
+        label8.setText("Unmigrated");
+        panel3.add(label8, new GridConstraints(3, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
+        labelUnmigrated = new JLabel();
+        labelUnmigrated.setText("0");
+        panel3.add(labelUnmigrated, new GridConstraints(3, 1, 1, 1, GridConstraints.ANCHOR_EAST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
         buttonClean = new JButton();
         buttonClean.setText("Clean");
         buttonClean.setToolTipText("Clean out usernames with a condition");
@@ -386,4 +379,9 @@ public final class GuiMain {
      * @noinspection ALL
      */
     public JComponent $$$getRootComponent$$$() { return contentPane; }
+
+    private enum RunStatus {
+        IDLE, SENDING, WAITING
+    }
+
 }

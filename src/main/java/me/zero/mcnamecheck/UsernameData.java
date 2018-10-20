@@ -6,15 +6,30 @@ package me.zero.mcnamecheck;
  */
 public final class UsernameData {
 
+    /**
+     * The actual username this data container represents.
+     */
     public final String username;
+
+    /**
+     * The {@link CheckStatus} of this username. Defaults to {@link CheckStatus#UNCHECKED}.
+     */
     public CheckStatus checkStatus;
 
-    public UsernameData(String username) {
+    /**
+     * This field is only definitive if the {@link #checkStatus} is {@link CheckStatus#UNAVAILABLE}.
+     */
+    public boolean unmigrated;
+
+    UsernameData(String username) {
         this.username = username;
         this.checkStatus = CheckStatus.UNCHECKED;
     }
 
     public enum CheckStatus {
-        AVAILABLE, UNAVAILABLE, FAILED, UNCHECKED;
+        AVAILABLE,
+        UNAVAILABLE,
+        FAILED,
+        UNCHECKED;
     }
 }
